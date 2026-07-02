@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ניהול הגלריה</title>
+
+<link rel="stylesheet" href="admin.css">
+</head>
+
+<body>
+
+<h1>🎨 ניהול הגלריה של מאי</h1>
+
+<div id="login">
+
+<input
+type="password"
+id="password"
+placeholder="הכניסי סיסמה">
+
+<button onclick="login()">
+כניסה
+</button>
+
+</div>
+
+<div id="adminPanel" style="display:none;">
+
+<h2>רשימת הציורים</h2>
+
+<button onclick="addPainting()">
+➕ הוסף ציור חדש
+</button>
+
+<div id="paintings"></div>
+
+</div>
+
+<script src="admin.js"></script>
+
+</body>
+</html>

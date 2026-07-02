@@ -1,0 +1,83 @@
+body{
+margin:0;
+padding:40px;
+font-family:'Heebo',sans-serif;
+background:#faf7fc;
+direction:rtl;
+}
+
+h1{
+text-align:center;
+color:#d84b92;
+margin-bottom:40px;
+}
+
+#login{
+max-width:400px;
+margin:auto;
+background:white;
+padding:30px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.15);
+text-align:center;
+}
+
+#login input{
+width:100%;
+padding:15px;
+font-size:18px;
+border-radius:10px;
+border:1px solid #ccc;
+margin-bottom:20px;
+}
+
+#login button{
+width:100%;
+padding:15px;
+background:#d84b92;
+color:white;
+border:none;
+border-radius:10px;
+font-size:18px;
+cursor:pointer;
+}
+
+#login button:hover{
+background:#bf3477;
+}
+
+#adminPanel{
+margin-top:40px;
+}
+
+.paintCard{
+background:white;
+padding:20px;
+margin-bottom:20px;
+border-radius:20px;
+box-shadow:0 10px 25px rgba(0,0,0,.12);
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+.paintCard img{
+width:120px;
+height:120px;
+object-fit:cover;
+border-radius:15px;
+}
+
+.paintCard button{
+padding:12px 18px;
+background:#d84b92;
+color:white;
+border:none;
+border-radius:10px;
+cursor:pointer;
+font-size:16px;
+}
+
+.paintCard button:hover{
+background:#bf3477;
+}
