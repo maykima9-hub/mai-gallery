@@ -1,55 +1,88 @@
-const gallery = document.getElementById("galleryContainer");
-const cartItems = document.getElementById("cartItems");
-const total = document.getElementById("total");
+const defaultPaintings = [
+{
+name:"שקיעה עם בית שחור",
+price:15,
+image:"1.png",
+sold:false,
+favorite:false
+},
+{
+name:"זאב צבעוני",
+price:40,
+image:"2.png",
+sold:false,
+favorite:false
+},
+{
+name:"מנדלת השמיים",
+price:60,
+image:"3.png",
+sold:false,
+favorite:false
+},
+{
+name:"אננס שחור",
+price:40,
+image:"4.png",
+sold:false,
+favorite:false
+},
+{
+name:"גלים ורוד-כחול",
+price:60,
+image:"5.png",
+sold:false,
+favorite:false
+},
+{
+name:"ילדה בטבע",
+price:40,
+image:"6.png",
+sold:false,
+favorite:false
+},
+{
+name:"נוף סתיו",
+price:40,
+image:"7.png",
+sold:false,
+favorite:false
+},
+{
+name:"חלון לים",
+price:40,
+image:"8.png",
+sold:false,
+favorite:false
+}
+];
 
-let paintings = [];
-let cart = [];
+let paintings =
+JSON.parse(localStorage.getItem("paintings")) ||
+defaultPaintings;
 
-async function loadPaintings() {
+let cart=[];
 
-    const { data, error } = await supabase
-        .from("paintings")
-        .select("*")
-        .order("id");
+const gallery=document.getElementById("galleryContainer");
+const cartItems=document.getElementById("cartItems");
+const total=document.getElementById("total");
 
-    if (error) {
-        console.error(error);
-        return;
-    }
+function savePaintings(){
 
-    paintings = data || [];
+localStorage.setItem(
+"paintings",
+JSON.stringify(paintings)
+);
 
-    renderGallery();
 }
 
-async function saveFavorite(index) {
+function renderGallery(){
 
-    const painting = paintings[index];
+gallery.innerHTML="";
 
-    painting.favorite = !painting.favorite;
+paintings.forEach((item,index)=>{
 
-    const { error } = await supabase
-        .from("paintings")
-        .update({
-            favorite: painting.favorite
-        })
-        .eq("id", painting.id);
-
-    if (error) {
-        console.error(error);
-        return;
-    }
-
-    renderGallery();
-}
-
-function renderGallery() {
-
-    gallery.innerHTML = "";
-
-    paintings.forEach((item, index) => {
-
-        gallery.innerHTML += `
+gallery.innerHTML+=`
 
 <div class="card">
 
@@ -62,13 +95,13 @@ onclick="openImage('${item.image}')">
 
 <button
 class="favorite"
-onclick="saveFavorite(${index})">
+onclick="toggleFavorite(${index})">
 
 ${item.favorite ? "❤️" : "🤍"}
 
 </button>
 
-${item.sold ? '<div class="soldBadge">נמכר</div>' : ""}
+${item.sold ? `<div class="soldBadge">נמכר</div>` : ""}
 
 </div>
 
@@ -81,52 +114,67 @@ ${item.price} ₪
 </p>
 
 ${item.sold
-? '<button disabled>🔴 נמכר</button>'
-: `<button onclick="addToCart(${index})">🛒 הוסף לעגלה</button>`}
+
+?
+
+`<button disabled>🔴 נמכר</button>`
+
+:
+
+`<button onclick="addToCart(${index})">
+
+🛒 הוסף לעגלה
+
+</button>`
+
+}
 
 </div>
 
 `;
 
-    });
+});
 
 }
 
-function addToCart(index) {
+renderGallery();
+function addToCart(index){
 
-    cart.push(paintings[index]);
+cart.push(paintings[index]);
 
-    updateCart();
-
-}
-
-function removeFromCart(index) {
-
-    cart.splice(index, 1);
-
-    updateCart();
+updateCart();
 
 }
 
-function updateCart() {
+function removeFromCart(index){
 
-    if (cart.length === 0) {
+cart.splice(index,1);
 
-        cartItems.innerHTML = "העגלה ריקה";
-        total.textContent = 0;
-        return;
+updateCart();
 
-    }
+}
 
-    cartItems.innerHTML = "";
+function updateCart(){
 
-    let sum = 0;
+if(cart.length===0){
 
-    cart.forEach((item, index) => {
+cartItems.innerHTML="העגלה ריקה";
 
-        sum += item.price;
+total.textContent=0;
 
-        cartItems.innerHTML += `
+return;
+
+}
+
+cartItems.innerHTML="";
+
+let sum=0;
+
+cart.forEach((item,index)=>{
+
+sum+=item.price;
+
+cartItems.innerHTML+=`
 
 <div class="cartItem">
 
@@ -144,88 +192,109 @@ function updateCart() {
 
 `;
 
-    });
+});
 
-    total.textContent = sum;
-
-}
-
-function openImage(image) {
-
-    document.getElementById("lightbox").style.display = "flex";
-    document.getElementById("lightboxImage").src = image;
+total.textContent=sum;
 
 }
 
-document.getElementById("closeLightbox").onclick = function () {
+function toggleFavorite(index){
 
-    document.getElementById("lightbox").style.display = "none";
+paintings[index].favorite=!paintings[index].favorite;
 
-};
+savePaintings();
 
-document.getElementById("lightbox").onclick = function (e) {
+renderGallery();
 
-    if (e.target.id === "lightbox") {
+}
 
-        this.style.display = "none";
+function openImage(image){
 
-    }
+document.getElementById("lightbox").style.display="flex";
 
-};
+document.getElementById("lightboxImage").src=image;
 
-document.getElementById("whatsappBtn").onclick = function () {
+}
 
-    if (cart.length === 0) {
+document.getElementById("closeLightbox").onclick=function(){
 
-        alert("העגלה ריקה");
-        return;
-
-    }
-
-    let message = "🎨 שלום!%0A%0A";
-    message += "אני רוצה להזמין את הציורים הבאים:%0A%0A";
-
-    cart.forEach(item => {
-
-        message += `🖼️ ${item.name} - ${item.price} ₪%0A`;
-
-    });
-
-    message += `%0A💰 סה"כ: ${total.textContent} ₪`;
-    message += "%0A%0Aתודה רבה! 🌸";
-
-    const phone = "972549816989";
-
-    window.open(
-        `https://api.whatsapp.com/send?phone=${phone}&text=${message}`,
-        "_blank"
-    );
+document.getElementById("lightbox").style.display="none";
 
 };
 
-window.onload = async function () {
+document.getElementById("lightbox").onclick=function(e){
 
-    await loadPaintings();
+if(e.target.id==="lightbox"){
 
-    updateCart();
+this.style.display="none";
+
+}
 
 };
 
-supabase
-    .channel("paintings")
+document.getElementById("whatsappBtn").onclick=function(){
 
-    .on(
-        "postgres_changes",
-        {
-            event: "*",
-            schema: "public",
-            table: "paintings"
-        },
-        async () => {
+if(cart.length===0){
 
-            await loadPaintings();
+alert("העגלה ריקה");
 
-        }
-    )
+return;
 
-    .subscribe();
+}
+
+let message="🎨 שלום!%0A%0A";
+
+message+="אני רוצה להזמין את הציורים הבאים:%0A%0A";
+
+cart.forEach(item=>{
+
+message+=`🖼️ ${item.name} - ${item.price} ₪%0A`;
+
+});
+
+message+=`%0A💰 סה"כ: ${total.textContent} ₪`;
+
+message+="%0A%0Aתודה רבה! 🌸";
+
+const phone="972549816989";
+
+window.open(
+
+`https://api.whatsapp.com/send?phone=${phone}&text=${message}`,
+
+"_blank"
+
+);
+
+};
+window.onload=function(){
+
+const saved=localStorage.getItem("paintings");
+
+if(saved){
+
+paintings=JSON.parse(saved);
+
+}
+
+renderGallery();
+
+updateCart();
+
+};
+
+window.addEventListener("storage", function () {
+
+const saved = localStorage.getItem("paintings");
+
+if(saved){
+
+paintings = JSON.parse(saved);
+
+renderGallery();
+
+updateCart();
+
+}
+
+});
