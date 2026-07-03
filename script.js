@@ -66,7 +66,25 @@ let cart=[];
 const gallery=document.getElementById("galleryContainer");
 const cartItems=document.getElementById("cartItems");
 const total=document.getElementById("total");
+async function loadPaintings(){
 
+    const { data, error } = await supabase
+        .from("paintings")
+        .select("*")
+        .order("id");
+
+    if(error){
+
+        console.error(error);
+        return;
+
+    }
+
+    paintings = data;
+
+    renderGallery();
+
+}
 function savePaintings(){
 
 localStorage.setItem(
@@ -136,8 +154,7 @@ ${item.sold
 
 }
 
-renderGallery();
-
+loadPaintings();
 function addToCart(index){
 
 cart.push(paintings[index]);
